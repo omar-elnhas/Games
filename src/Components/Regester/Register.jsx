@@ -1,132 +1,199 @@
-import axios from 'axios';
-import Joi from 'joi';
-import React, { useState } from 'react'
+import axios from "axios";
+import Joi from "joi";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import FormImage from "../../assests/Images/atw8CM.webp";
+import './Register.css'
+import {Helmet} from "react-helmet";
 
 
 export default function Register() {
-    let [user, setUser] = useState({
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-        age: "",
-      });
+  const [loading,setLoading]=useState(true)
+  const [errorMsg,setErrorMsg]=useState('')
+  const [validationError,setvalidationError]=useState([])
+  let navigate = useNavigate()
+let [user,setUser]=useState({
+  first_name:"",
+  last_name:"",
+  age:'',
+  email:"",
+  password:""
 
-      const [error, setError] = useState('')
-const [validatError, setValidatError] = useState([])
-      let navigate=useNavigate()
-
-
- let Submit =async(e)=>{
-    e.preventDefault()
-let  validatRespons=validatForm()
-console.log(validatRespons);
-if(validatRespons.error)
-{
-setValidatError(validatRespons.error.details)
+})
+function getUserInfo(e){
+console.log(e.target.value);
+let currentUser = {...user};
+currentUser[e.target.name]=e.target.value
+setUser(currentUser)
+console.log(currentUser);
 }
-else{
-  let {data}=await axios.post('https://route-egypt-api.herokuapp.com/signup',user)
-  console.log(data);
-  if(data.message === 'success')
-  {
-  goToLogin()
+
+async function register(e) {
+  setLoading(false)
+  e.preventDefault()
+  if(validationUser()){
+ let {data}= await axios.post('https://sticky-note-fe.vercel.app/signup',user)
+  let respone = data        
+  
+  if (respone.message==='success'){
+      navigate('/login')
+      // setLoading(true)
+
   }
   else{
-  setError(data.message)
+      setLoading(false)
+      setErrorMsg(respone.errors)
+  }
+}
+}
+
+
+console.log(errorMsg);
+
+function validationUser(){
+  let schema = Joi.object({
+      first_name: Joi.string().alphanum().min(3).max(30).required().messages({
+        "string.empty":"first name is required",
+        "string.min":"first name is required"
+      }),
+      last_name: Joi.string().alphanum().min(3).max(30).required().messages({
+        "string.empty":"last name is required",
+        "string.min":"last name is required"
+      }),
+      password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+      email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+      age: Joi.number().min(15).max(60).required(),
+
+  });
+  let res =schema.validate(user,{abortEarly:false})
+  if(res.error){
+      console.log(res);
+      setvalidationError(res.error.details)
+      return false
+  }else{
+      return true
   }
 }
 
-    
-
-}
-
-let validatForm =()=>{
-let schema = Joi.object({
-  first_name:Joi.string().alphanum().required().min(4).max(12),
-  last_name:Joi.string().alphanum().required().min(4).max(12),
-  email:Joi.string().email({tlds:{allow:['com','net']}}).required(),
-  password:Joi.string().min(4).max(14).pattern(new RegExp(/^[a-z][0-9]{3}$/)),
-  age:Joi.number().min(18).max(50)
-})
-return schema.validate(user,{abortEarly:false})
-}
-
-let goToLogin =()=>{
-navigate ('/Login')
-}
-
-let getInput=(e)=>{
-let myUser={...user}  //deep copy
-myUser[e.target.name]=e.target.value
-setUser(myUser)
-console.log(myUser);
-}
 
   return (
     <>
- 
-    <form onSubmit={Submit}>
+                <Helmet>
+                <meta charSet="utf-8" />
+                <title>Register</title>
+            </Helmet>
+      <div className="container">
+        <div className="info d-flex justify-content-center align-items-center">
+        
+          <div className="row">
+          <div className="col-md-6">
+            <div className="imageForm">
+              <img src={FormImage} className="img-fluid" alt="" />
+            </div>
+          </div>
+          <div className="col-md-6 formRegisterBackGround">
+            <h2 className="text-center py-2 text-muted">Create My Account!</h2>
+            {errorMsg?<div className="alert alert-danger">
+                    {errorMsg?.email?.message}
+                </div>:'' }
+            <form  onSubmit={(e)=>register(e)}
+             className="form ">
 
 
-  {validatError.map((error)=><div className='alert alert-danger'>{error.message}</div>)}
 
-          <div className="input-data my-2 ">
-            <label htmlFor="first_name">First Name</label>
-            <input
-              onChange={getInput}
-              type="text"
-              className="form-control my-2 "
-              name="first_name"
-            />
-          </div>
-          <div className="input-data my-2">
-            <label htmlFor="last_name">Last Name</label>
-            <input
-              onChange={getInput}
-              type="text"
-              className="form-control my-2"
-              name="last_name"
-            />
-          </div>
-          <div className="input-data my-2">
-            <label htmlFor="email">Email</label>
-            <input
-              onChange={getInput}
-              type="email"
-              className="form-control my-2"
-              name="email"
-            />
-          </div>
- {error?         <div>
-  <h5 className='alert alert-danger'>{error}</h5>
-</div>:''}
-          <div className="input-data my-2">
-            <label htmlFor="password">Password</label>
-            <input
-              onChange={getInput}
-              type="password"
-              className="form-control my-2"
-              name="password"
-            />
-          </div>
-          <div className="input-data my-2">
-            <label htmlFor="age">Age</label>
-            <input
-              onChange={getInput}
-              type="number"
-              className="form-control my-2"
-              name="age"
-            />
-          </div>
+              <div className="d-flex justify-content-between py-1">
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  me-2 border-dark border border-1 text-dark w-75 "
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  placeholder="First Name"
+                />
 
-          <button className="btn btn-info my-3 float-end">register</button>
-          <div className="clear-fix"></div>
-        </form>
-    
-    
-    
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  ms-2 border-dark border border-1 text-dark w-75"
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  placeholder="Last Name"
+                />
+              </div>
+              <div className="d-flex justify-content-between text-danger">
+              {/* {validationError && (<div className="text-danger alert alert-danger me-2"> {validationError.filter((ele)=>ele.context.label=='first_name')[0]?.message} </div>)} */}
+              <div>
+              {validationError.filter((ele)=>ele.context.label==='first_name')[0]?.message}
+
+              </div>
+              <div>
+              {validationError.filter((ele)=>ele.context.label==='last_name')[0]?.message}
+
+              </div>
+              {/* validationError.filter((ele)=>ele.context.label=='first_name')[0]?.message} */}
+{/* {              <h6 className="text-danger alert alert-danger me-2"> {validationError.filter((ele)=>ele.context.label=='first_name')[0]?.message}:</h6>  */}
+             {/* <h6 className="text-danger alert alert-danger ms-2"> {validationError.filter((ele)=>ele.context.label=='last_name')[0]?.message} </h6> */}
+              </div>
+              <div className="form-group py-1">
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  border-dark border border-1 text-dark"
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Email Address"
+                />
+                {/* <h6 className="text-danger alert alert-danger">{validationError.filter((ele)=>ele.context.label=='email')[0]?.message}</h6> */}
+             <div className="text-danger">
+             {validationError.filter((ele)=>ele.context.label==='email')[0]?.message}
+
+             </div>
+              </div>
+              <div className="form-group py-1">
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  border-dark border border-1 text-dark"
+                  type="number"
+                  name="age"
+                  id="age"
+                  placeholder="age"
+                />
+             {/* <h6 className="text-danger alert alert-danger">   {validationError.filter((ele)=>ele.context.label=='age')[0]?.message}</h6> */}
+             <div className="text-danger">
+
+             {validationError.filter((ele)=>ele.context.label==='age')[0]?.message}
+              </div>
+              </div>
+              <div className="form-group py-1">
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  border-dark border border-1 text-dark"
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Password"
+                />
+              {/* <h6 className="text-danger alert alert-danger">  {validationError.filter((ele)=>ele.context.label=='password')[0]?.message}</h6> */}
+              <div className="text-danger">
+
+              {validationError.filter((ele)=>ele.context.label==='password')[0]?.message}
+            
+              </div>
+              </div>
+                  <div className="py-2">
+                  <button className="btn btn-secondary  border-dark w-100">{loading?`Create Account`:<i className="fas fa-spinner fa-spin " ></i>}</button>
+                  </div>
+                  <p className="py-2 text-center border-0 border-bottom">This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+              <div className="text-center pt-1 pb-3">
+              Already a member? <Link to='/login'>Log in</Link>
+              </div>
+      
+            </form>
+
+         
+          </div>
+          </div>
+          
+        
+        </div>
+       
+      </div>
     </>
-  )
+  );
 }

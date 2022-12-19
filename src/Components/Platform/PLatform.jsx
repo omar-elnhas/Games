@@ -1,59 +1,60 @@
 import axios from 'axios';
 import { useState,useEffect,useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet'
+import { Link,useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
-export default function Shooter() {
-    let params =useParams();
+import "./Platform.css";
+
+export default function Pc() {
+  let params =useParams();
 
   const [all, setAll] = useState([]);
   const [visibale, setVisibale] = useState(20);
   const [isLoading, setIsLodaing] = useState(true);
-
 
   const tempOptions = useRef()
 
    
   const dataOptions=()=>{
 
-    const options = {
-        method: 'GET',
-        url: `https://free-to-play-games-database.p.rapidapi.com/api/games?category=${params.categories}`,
+  const options = {
+    method: 'GET',
+    url: `https://free-to-play-games-database.p.rapidapi.com/api/games?platform=${params.platform}`,
+    headers: {
+      'X-RapidAPI-Key': '4f1c54e50dmshf91ed5579504681p1d01aajsna895d78fad75',
+      'X-RapidAPI-Host': 'free-to-play-games-database.p.rapidapi.com'
+    }
+  };
+  axios.request(options).then(function (response) {
+    console.log(response.data);
+    setAll(response.data);
+    setIsLodaing(false)
+  }).catch(function (error) {
+    console.error(error);
+    setIsLodaing(true)
 
-        headers: {
-          'X-RapidAPI-Key': '4f1c54e50dmshf91ed5579504681p1d01aajsna895d78fad75',
-          'X-RapidAPI-Host': 'free-to-play-games-database.p.rapidapi.com'
-        }
-      };
-      axios.request(options).then(function (response) {
-        console.log(response.data);
-        setAll(response.data);
-        setIsLodaing(false)
-      }).catch(function (error) {
-        console.error(error);
-        setIsLodaing(true)
+  });
+}
+
+tempOptions.current=dataOptions
+
   
-      });
-    }
 
-    tempOptions.current=dataOptions
+  useEffect(() => {
+    tempOptions.current()
 
+  }, [params.platform])
 
-      useEffect(() => {
-        tempOptions.current()
-
-      }, [params.categories])
-
-      const showMorePages = ()=>{
-        setVisibale((prevValue)=>prevValue+20);
-    }
+  const showMorePages = ()=>{
+    setVisibale((prevValue)=>prevValue+20);
+}
 
   return (
-    <>
+<>
 
-        <Helmet>
+<Helmet>
          <meta charSet="utf-8" />
-        <title>Categories</title>
+        <title>Platform</title>
       
       </Helmet>
 <div className="container py-4">
@@ -76,10 +77,10 @@ export default function Shooter() {
   <Link to={`/details/${item.id}`} className=' nav-link'>
   <div className='card-info'>
 
-      <div className="rounded-2 card  border-0" >
+      <div className="rounded-4 card   border-0" >
     <img src={item.thumbnail} className="rounded-top card-img-top" alt="..."/>
 
-  <div className="card-body body text-dark ">
+  <div className="card-body body text-dark">
   <div className='d-flex justify-content-between'>
       <h5 className="h6 card-title">{item.title?.split(" ").splice(0,3).join(" ")} </h5>
       <span className=' px-1 btn btn-sm btn-dark'>Free</span>
@@ -104,13 +105,15 @@ export default function Shooter() {
 
       </div>)}
       <div className='m-auto d-flex py-4'>
-          <button onClick={showMorePages} className='btn btn-dark btn-outline-secondary m-auto' >Load more</button>
+          <button onClick={showMorePages} className='btn btn-outline-secondary btn-dark m-auto' >Load more</button>
 
           </div>
     </div>
 
   </div>
-    </>
 
+
+</>
     )
 }
+

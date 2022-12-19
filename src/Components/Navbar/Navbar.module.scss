@@ -2,3 +2,9 @@
 .bgNavbar{
   background-color: $lightBgColor;
 }
+.bgDropDown{
+  background-color:$bgDrop;
+}
+.bgDropDown li Link:hover{
+  color: $bgDrop !important;
+}

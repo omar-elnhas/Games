@@ -1,109 +1,149 @@
-import axios from 'axios';
-import Joi from 'joi';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import Joi from "joi";
+import React, { useState } from "react";
+import { useNavigate, Link } from 'react-router-dom';
+import FormImage from "../../assests/Images/atw8CM.webp";
+import {Helmet} from "react-helmet";
+import './Login.css'
 
 
-export default function Login({saveUserData}) {
-    let [user, setUser] = useState({
-       
-        email: "",
-        password: "",
-        
-      });
 
-      const [error, setError] = useState('')
-const [validatError, setValidatError] = useState([])
-      let navigate=useNavigate()
+export default function Login({saveUser}) {
+  const [loading,setLoading]=useState(true)
+  const [errorMsg,setErrorMsg]=useState('')
+  const [validationError,setvalidationError]=useState([])
+
+  let navigate = useNavigate()
+let [user,setUser]=useState({
+  email:"",
+  password:""
+
+})
 
 
- let Submit =async(e)=>{
-    e.preventDefault()
-let  validatRespons=validatForm()
-console.log(validatRespons);
-if(validatRespons.error)
-{
-setValidatError(validatRespons.error.details)
+function getUserInfo(e){
+console.log(e.target.value);
+let currentUser = {...user};
+currentUser[e.target.name]=e.target.value
+setUser(currentUser)
+console.log(currentUser);
 }
-else{
-  let {data}=await axios.post('https://route-egypt-api.herokuapp.com/signin',user)
-  console.log(data);
-  if(data.message === 'success')
-  {
-    localStorage.setItem('token',data.token)
-    saveUserData()
-  goToHome()
+
+  async  function login(e) {
+  setLoading(false)
+  e.preventDefault()
+  if(validationUser()){
+    let {data}= await axios.post('https://sticky-note-fe.vercel.app/signin',user)
+  let respone = data        
+  
+  if (respone.message==='success'){
+    localStorage.setItem('token',data.token);
+    saveUser();
+
+      navigate('/')
+      // setLoading(true)
+
   }
   else{
-  setError(data.message)
+      setLoading(false)
+      setErrorMsg(respone.errors)
+  }
+}
+}
+
+
+
+console.log(errorMsg);
+
+function validationUser(){
+  let schema = Joi.object({
+      password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+      email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+
+  });
+  let res =schema.validate(user,{abortEarly:false})
+  if(res.error){
+      console.log(res);
+      setvalidationError(res.error.details)
+      return false
+  }else{
+      return true
   }
 }
 
-    
-
-}
-
-let validatForm =()=>{
-let schema = Joi.object({
- 
-  email:Joi.string().email({tlds:{allow:['com','net']}}).required(),
-  password:Joi.string().min(4).max(14).pattern(new RegExp(/^[a-z][0-9]{3}$/)),
-  
-})
-return schema.validate(user,{abortEarly:false})
-}
-
-let goToHome =()=>{
-navigate ('/')
-}
-
-let getInput=(e)=>{
-let myUser={...user}  //deep copy
-myUser[e.target.name]=e.target.value
-setUser(myUser)
-console.log(myUser);
-}
 
   return (
     <>
- 
-    <form onSubmit={Submit}>
-
-<h1 className='my-5'>LogIn Page</h1>
-  {validatError.map((error)=><div className='alert alert-danger'>{error.message}</div>)}
-
-          
-       
-          <div className="input-data my-2">
-            <label htmlFor="email">Email</label>
-            <input
-              onChange={getInput}
-              type="email"
-              className="form-control my-2"
-              name="email"
-            />
+                <Helmet>
+                <meta charSet="utf-8" />
+                <title>Login</title>
+            </Helmet>
+      <div className="container">
+      <div className="info d-flex justify-content-center align-items-center">
+        <div className="row   pt-2 mt-4 ">
+          <div className="col-md-6">
+            <div className="imageForm">
+              <img src={FormImage} className="img-fluid " alt="" />
+            </div>
           </div>
- {error?         <div>
-  <h5 className='alert alert-danger'>{error}</h5>
-</div>:''}
-          <div className="input-data my-2">
-            <label htmlFor="password">Password</label>
-            <input
-              onChange={getInput}
-              type="password"
-              className="form-control my-2"
-              name="password"
-            />
-          </div>
-          
+          <div className="col-md-6 formRegisterBackGround">
+          <div className="imageFormLogin w-25  m-auto">
+<img src='' className='w-100' alt="" />
 
-          <button className="btn btn-info my-3 float-end">Login</button>
-          <div className="clear-fix"></div>
-        </form>
-    
-    
-    
+</div>
+<h2 className="text-center py-2 text-muted">Log in to GameOver</h2>
+            {errorMsg?<div className="alert alert-danger">
+                    {errorMsg?.email?.message}
+                </div>:'' }
+            <form  onSubmit={(e)=>login(e)}
+             className="form ">
+
+
+
+
+
+              <div className="form-group py-1">
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  border-dark border border-1 text-dark"
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Email Address"
+                />
+                {/* <h6 className="text-danger alert alert-danger">{validationError.filter((ele)=>ele.context.label=='email')[0]?.message}</h6> */}
+                <div className="text-danger">
+
+                {validationError.filter((ele)=>ele.context.label==='email')[0]?.message}
+              </div>
+              </div>
+  
+              <div className="form-group py-1">
+                <input onChange={(e)=>getUserInfo(e)}
+                  className="form-control  border-dark border border-1 text-dark"
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Password"
+                />
+              {/* <h6 className="text-danger alert alert-danger">  {validationError.filter((ele)=>ele.context.label=='password')[0]?.message}</h6> */}
+              <div className="text-danger">
+
+              {validationError.filter((ele)=>ele.context.label==='password')[0]?.message}
+              </div>
+              </div>
+                  <div className="py-2">
+                  <button className="btn btn-secondary  border-dark w-100">{loading?`Login`:<i className="fas fa-spinner fa-spin " ></i>}</button>
+                  </div>
+              <div className="text-center pt-1 pb-3">
+              Not a member yet? <Link to='/register'>Create Account</Link>
+              </div>
+            </form>
+
+         
+          </div>
+        </div>
+        </div>
+      </div>
     </>
-  )
+  );
 }
-

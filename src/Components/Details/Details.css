@@ -1,0 +1,12 @@
+.text {
+    /* color: black; */
+    font-weight: 600;
+    background-image: linear-gradient(to right ,rgb(133, 126, 107,.4),rgba(70, 28, 28, 0.8), rgb(133, 126, 107,.4));
+}
+h3{
+    color: rgb(248, 124, 124);
+    font-weight: 800;
+}
+.brdr-img{
+  border-radius: 11% 89% 8% 92% / 89% 12% 88% 11%;   
+}

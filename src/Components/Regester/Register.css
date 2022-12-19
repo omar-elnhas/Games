@@ -1,0 +1,7 @@
+.formRegisterBackGround{
+    
+    background-image: linear-gradient(to right ,rgb(133, 126, 107,.4),rgba(70, 28, 28, 0.8), rgb(133, 126, 107,.4));
+}
+.info{
+    height: 100vh;
+}

@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+.navbar-brand{
+    font-family: 'Anton', sans-serif;
+}
+
+nav{
+    background-color:rgba(133, 126, 107, 0.9);
+    z-index: 2;
+}
