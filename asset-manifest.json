@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Games/static/css/main.621d2b59.css",
-    "main.js": "/Games/static/js/main.40b0613b.js",
+    "main.js": "/Games/static/js/main.600f1f35.js",
     "static/js/787.28cb0dcd.chunk.js": "/Games/static/js/787.28cb0dcd.chunk.js",
     "static/media/284100.jpg": "/Games/static/media/284100.74749b81c1ab018c8a31.jpg",
     "static/media/Na_June_69.jpg": "/Games/static/media/Na_June_69.d1a11f73f5f3fb3c5577.jpg",
@@ -17,11 +17,11 @@
     "static/media/fa-v4compatibility.woff2": "/Games/static/media/fa-v4compatibility.4ee7f902d88f819e251c.woff2",
     "index.html": "/Games/index.html",
     "main.621d2b59.css.map": "/Games/static/css/main.621d2b59.css.map",
-    "main.40b0613b.js.map": "/Games/static/js/main.40b0613b.js.map",
+    "main.600f1f35.js.map": "/Games/static/js/main.600f1f35.js.map",
     "787.28cb0dcd.chunk.js.map": "/Games/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.621d2b59.css",
-    "static/js/main.40b0613b.js"
+    "static/js/main.600f1f35.js"
   ]
 }
