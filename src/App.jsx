@@ -3,7 +3,7 @@ import Platform from './Components/Platform/PLatform'
 import Sortby from './Components/Sortby/Sortby'
 import Categories from './Components/Categories/Categorie'
 import NotFound from './Components/NotFound/NotFound'
-import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Layout from './Components/Layout/Layout'
 import jwt_Decode from "jwt-decode";
 import { useState,useEffect } from 'react';
@@ -48,7 +48,7 @@ export default function App() {
 
 
 
-  let routers= createHashRouter([
+  let routers= createBrowserRouter([
     {path:'/',
     element:<Layout userData={userData} logout={logout} />,children:[
       {index:true,element:
